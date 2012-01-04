@@ -1,0 +1,7 @@
+Macwatch allows you to run arbitrary code when a specified file is changed, similar to incron in Linux.
+
+For example:
+
+./watch.sh important.file "run_testing_suite"
+
+will have run_testing_suite be run every time that important.file is changed.

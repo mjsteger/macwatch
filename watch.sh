@@ -15,7 +15,7 @@ then
     exit 1
 fi
 
-fileToWatch=$1
+fileToWatch=`pwd`$1
 shift
 commandToRun=$@
 
