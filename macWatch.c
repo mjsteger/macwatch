@@ -27,7 +27,7 @@ int main(int argc, char *argv[])
       // sprintf doesnt like arguments from argv(segfaulted on my machine), so I copy it out first
       strcpy(fileToWatch, argv[1]);
       strcpy(commandToRun, argv[2]);
-      sprintf(commandRequest, "./watch.sh %s %d %s ", fileToWatch, myPid, commandToRun);
+      sprintf(commandRequest, "/usr/local/bin/watch.sh %s %d %s ", fileToWatch, myPid, commandToRun);
       system(commandRequest);
     }
   pid_t pid;

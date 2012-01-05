@@ -11,3 +11,4 @@ clean:
 
 install:
 	cp killer.sh /usr/local/bin/
+	cp watch.sh /usr/local/bin/
