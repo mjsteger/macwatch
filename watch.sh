@@ -1,7 +1,7 @@
 #!/bin/bash
 
 tmpFileLocation=/tmp/macWatch.plist
-tmpPipeLocation=/tmp/macWatch.pipe
+killerLocation=`pwd`/killer.sh
 USAGE="Usage: $0 fileToWatch commandToRun"
 
 if [ ! -p $tmpPipeLocation ]
@@ -15,12 +15,14 @@ then
     exit 1
 fi
 
-fileToWatch=`pwd`$1
+fileToWatch=`pwd`/$1
+shift
+pidOfFile=$1
 shift
 commandToRun=$@
 
 trap "launchctl unload $tmpFileLocation; rm -rf $tmpPipeLocation; exit 1" SIGINT SIGTERM
-
+trap "echo hello" SIGUSR1
 
 cat <<EOF > $tmpFileLocation
 <?xml version="1.0" encoding="UTF-8"?>
@@ -31,30 +33,18 @@ cat <<EOF > $tmpFileLocation
  <string>MacWatcher</string>
  <key>ProgramArguments</key>
  <array>
-  <string>#COMMANDTORUN#</string>
-  <string>path modified</string>
+  <string>#KILLERLOCATION#</string>
+  <string>#PIDOFFILE#</string>
  </array>
  <key>WatchPaths</key>
  <array>
   <string>#FILETOWATCH#</string>
  </array>
- <key>StandardOutPath</key>
-   <string>#PIPETOWRITE#</string>
 </dict>
 </plist>
 EOF
-
-sed -i.bak "s:#COMMANDTORUN#:$commandToRun:" $tmpFileLocation
+sed -i.bak "s:#KILLERLOCATION#:$killerLocation:" $tmpFileLocation
+sed -i.bak "s:#PIDOFFILE#:$pidOfFile:" $tmpFileLocation
 sed -i.bak "s:#FILETOWATCH#:$fileToWatch:" $tmpFileLocation
-sed -i.bak "s:#PIPETOWRITE#:$tmpPipeLocation:" $tmpFileLocation
 
 launchctl load $tmpFileLocation
-
-while true
-do
-    if read line < $tmpPipeLocation
-    then
-	echo $line
-    fi
-    sleep 1
-done
