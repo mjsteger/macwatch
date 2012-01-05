@@ -9,6 +9,7 @@ macWatch.o : macWatch.c
 clean:
 	rm macWatch.o macWatch
 
-install:
+install: clean macWatch
+	cp macWatch /usr/local/bin/
 	cp killer.sh /usr/local/bin/
 	cp watch.sh /usr/local/bin/
