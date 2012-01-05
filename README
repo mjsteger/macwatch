@@ -1,7 +1,9 @@
-Macwatch allows you to run arbitrary code when a specified file is changed, similar to incron in Linux.
+macWatch allows you to run arbitrary code when a specified file is changed, similar to incron in Linux. To install, make and make install.
 
 For example:
 
-./watch.sh important.file "run_testing_suite"
+./macWatch important.file "run_testing_suite"
 
 will have run_testing_suite be run every time that important.file is changed.
+
+A common use that I have is, given some script that cds to the right directory and runs make(lets say makeMe this_dir), you can run ./macWatch thisThing.c "makeMe `pwd`". Then, everytime you change the C file, it will re-make, so you will always have an up-to-date executable.

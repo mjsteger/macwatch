@@ -1,13 +1,13 @@
-all: interactionLoop
+all: macWatch
 
-interactionLoop: interactionLoop.o
-	cc -o interactionLoop interactionLoop.o
+macWatch: macWatch.o
+	cc -o macWatch macWatch.o
 
-interactionLoop.o : interactionLoop.c
-	cc -c interactionLoop.c
+macWatch.o : macWatch.c
+	cc -c macWatch.c
 
 clean:
-	rm interactionLoop.o interactionLoop
+	rm macWatch.o macWatch
 
 install:
 	cp killer.sh /usr/local/bin/
