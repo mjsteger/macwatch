@@ -4,11 +4,16 @@
 #include <stdlib.h>  /* exit */
 #include <errno.h>   /* errno */
 #include <string.h> /* strcpy */
+#include <signal.h>
 
 const char * USAGE = "Usage: $0 fileToWatch commandToRun";
+int myPid;
+
+void cleanup();
 
 int main(int argc, char *argv[])
 {
+  myPid = getpid();
   char commandToRun[1000];
   if (argc < 2)
     {
@@ -20,12 +25,13 @@ int main(int argc, char *argv[])
       char commandRequest[1000];
       strcpy(fileToWatch, argv[1]);
       strcpy(commandToRun, argv[2]);
-      sprintf(commandRequest, "./watch.sh %s %d %s ", fileToWatch, getpid(), commandToRun);
+      sprintf(commandRequest, "./watch.sh %s %d %s ", fileToWatch, myPid, commandToRun);
       system(commandRequest);
     }
   pid_t pid;
   while(1)
     {
+      signal(SIGINT, cleanup);
       pid = fork();
       if (pid == -1)
 	{
@@ -40,7 +46,7 @@ int main(int argc, char *argv[])
       else
 	{
 	  char fileLocation[1000];
-	  sprintf(fileLocation, "/tmp/macWatch.%d", getpid());
+	  sprintf(fileLocation, "/tmp/macWatch.%d", myPid);
 	  FILE * pidFile;
 	  pidFile = fopen(fileLocation, "w+");
 	  fprintf(pidFile, "%d", pid);
@@ -49,4 +55,21 @@ int main(int argc, char *argv[])
 	  system(commandToRun);
 	}
     }
+}
+
+void cleanup(void)
+{
+  // Make sure that the child process we spawn with fork doesnt also try to cleanup
+  if (getpid() == myPid){
+    char unloadSystemCall[1000];
+    sprintf(unloadSystemCall, "launchctl unload %s.%d ", "/tmp/macWatch.plist", myPid );
+    system(unloadSystemCall);
+    char removePlistSystemCall[1000];
+    sprintf(removePlistSystemCall, "rm  %s.%d* ", "/tmp/macWatch.plist", myPid );
+    system(removePlistSystemCall);
+    char removePidFileSystemCall[1000];
+    sprintf(removePidFileSystemCall, "rm %s.%d", "/tmp/macWatch", myPid);
+    system(removePidFileSystemCall);
+    exit(1);
+  }
 }

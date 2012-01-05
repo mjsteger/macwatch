@@ -1,13 +1,7 @@
 #!/bin/bash
 
-tmpFileLocation=/tmp/macWatch.plist
 killerLocation=`pwd`/killer.sh
 USAGE="Usage: $0 fileToWatch commandToRun"
-
-if [ ! -p $tmpPipeLocation ]
-then
-    mkfifo $tmpPipeLocation
-fi
 
 if [ $# -lt 2 ];
 then
@@ -22,7 +16,8 @@ shift
 commandToRun=$@
 
 trap "launchctl unload $tmpFileLocation; rm -rf $tmpPipeLocation; exit 1" SIGINT SIGTERM
-trap "echo hello" SIGUSR1
+
+tmpFileLocation=/tmp/macWatch.plist.$pidOfFile
 
 cat <<EOF > $tmpFileLocation
 <?xml version="1.0" encoding="UTF-8"?>
@@ -30,7 +25,7 @@ cat <<EOF > $tmpFileLocation
 <plist version="1.0">
 <dict>
     <key>Label</key>
- <string>MacWatcher</string>
+ <string>MacWatcher#PIDOFFILE#</string>
  <key>ProgramArguments</key>
  <array>
   <string>#KILLERLOCATION#</string>
@@ -43,6 +38,7 @@ cat <<EOF > $tmpFileLocation
 </dict>
 </plist>
 EOF
+
 sed -i.bak "s:#KILLERLOCATION#:$killerLocation:" $tmpFileLocation
 sed -i.bak "s:#PIDOFFILE#:$pidOfFile:" $tmpFileLocation
 sed -i.bak "s:#FILETOWATCH#:$fileToWatch:" $tmpFileLocation
