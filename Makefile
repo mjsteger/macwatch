@@ -8,3 +8,6 @@ interactionLoop.o : interactionLoop.c
 
 clean:
 	rm interactionLoop.o interactionLoop
+
+install:
+	cp killer.sh /usr/local/bin/

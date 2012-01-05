@@ -23,6 +23,8 @@ int main(int argc, char *argv[])
     {
       char fileToWatch[1000];
       char commandRequest[1000];
+
+      // sprintf doesnt like arguments from argv(segfaulted on my machine), so I copy it out first
       strcpy(fileToWatch, argv[1]);
       strcpy(commandToRun, argv[2]);
       sprintf(commandRequest, "./watch.sh %s %d %s ", fileToWatch, myPid, commandToRun);
@@ -31,6 +33,7 @@ int main(int argc, char *argv[])
   pid_t pid;
   while(1)
     {
+      // Catch a C-c and clean everything up
       signal(SIGINT, cleanup);
       pid = fork();
       if (pid == -1)

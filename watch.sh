@@ -1,6 +1,6 @@
 #!/bin/bash
 
-killerLocation=`pwd`/killer.sh
+killerLocation=/usr/local/bin/killer.sh
 USAGE="Usage: $0 fileToWatch commandToRun"
 
 if [ $# -lt 2 ];
